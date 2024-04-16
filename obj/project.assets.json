@@ -4522,11 +4522,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\2DS_Catarine_Samuel\\DS\\RpgApi\\RpgApi.csproj",
+      "projectUniqueName": "D:\\2DS_Catarine_Samuel\\DS\\Avaliação prática\\RpgApi\\RpgApi.csproj",
       "projectName": "RpgApi",
-      "projectPath": "D:\\2DS_Catarine_Samuel\\DS\\RpgApi\\RpgApi.csproj",
+      "projectPath": "D:\\2DS_Catarine_Samuel\\DS\\Avaliação prática\\RpgApi\\RpgApi.csproj",
       "packagesPath": "C:\\Users\\etechas\\.nuget\\packages\\",
-      "outputPath": "D:\\2DS_Catarine_Samuel\\DS\\RpgApi\\obj\\",
+      "outputPath": "D:\\2DS_Catarine_Samuel\\DS\\Avaliação prática\\RpgApi\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
