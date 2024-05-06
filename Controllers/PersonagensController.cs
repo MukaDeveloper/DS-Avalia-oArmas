@@ -1,3 +1,7 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RpgApi.Data;
@@ -6,32 +10,34 @@ using RpgApi.Models;
 namespace RpgApi.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("[Controller]")]
     public class PersonagensController : ControllerBase
     {
-        //Programação seguinte será aqui
-        private readonly DataContext _context; //variáveis globais vem com _ antes do nome por padrão
+        private readonly DataContext _context;
 
         public PersonagensController(DataContext context)
         {
-            _context = context; //Injeção de dependência
+            _context = context;
         }
 
+
         [HttpGet("{id}")] //Buscar pelo id
-        public async Task<IActionResult> GetSingle(int id) //assinatura do método → traz o tipo de retorno, parâmetros, etc
+        public async Task<IActionResult> GetSingle(int id)
         {
             try
             {
-                Personagem p = await _context.TB_PERSONAGENS
+                Personagem? p = await _context.TB_PERSONAGENS                    
+                    .Include(ar => ar.Arma)
+                    .Include(ph => ph.PersonagemHabilidades)
+                        .ThenInclude(h => h.Habilidade)
                     .FirstOrDefaultAsync(pBusca => pBusca.Id == id);
+
                 return Ok(p);
             }
-            catch (System.Exception ex) //"ex" → nome de variável p/ indicar erro
+            catch (System.Exception ex)
             {
-
                 return BadRequest(ex.Message);
             }
-
         }
 
         [HttpGet("GetAll")]
@@ -44,7 +50,6 @@ namespace RpgApi.Controllers
             }
             catch (System.Exception ex)
             {
-
                 return BadRequest(ex.Message);
             }
         }
@@ -56,28 +61,27 @@ namespace RpgApi.Controllers
             {
                 if (novoPersonagem.PontosVida > 100)
                 {
-                    throw new Exception("Pontos de vida não podem ser maiores do que 100!");
+                    throw new Exception("Pontos de vida não pode ser maior que 100");
                 }
-                await _context.TB_PERSONAGENS.AddAsync(novoPersonagem); //AddAsync → adiciona ao banco de dados
+                await _context.TB_PERSONAGENS.AddAsync(novoPersonagem);
                 await _context.SaveChangesAsync();
 
                 return Ok(novoPersonagem.Id);
             }
             catch (System.Exception ex)
             {
-                
                 return BadRequest(ex.Message);
             }
         }
-        
+
         [HttpPut]
         public async Task<IActionResult> Update(Personagem novoPersonagem)
         {
             try
             {
-                if(novoPersonagem.PontosVida > 100)
+                if (novoPersonagem.PontosVida > 100)
                 {
-                    throw new SystemException("Pontos de vida não podem ser maiores do que 100!");
+                    throw new System.Exception("Pontos de vida não pode ser maior que 100");
                 }
                 _context.TB_PERSONAGENS.Update(novoPersonagem);
                 int linhasAfetadas = await _context.SaveChangesAsync();
@@ -86,7 +90,6 @@ namespace RpgApi.Controllers
             }
             catch (System.Exception ex)
             {
-                
                 return BadRequest(ex.Message);
             }
         }
@@ -96,19 +99,28 @@ namespace RpgApi.Controllers
         {
             try
             {
-                Personagem pRemover = await _context.TB_PERSONAGENS.FirstOrDefaultAsync(pRemover => pRemover.Id == id);
+                Personagem? pRemover = await _context.TB_PERSONAGENS.FirstOrDefaultAsync(p => p.Id == id);
+
+                if (pRemover == null) throw new Exception("Personagem não encontrado.");
 
                 _context.TB_PERSONAGENS.Remove(pRemover);
-                int linhasAfetadas = await _context.SaveChangesAsync();
-                return Ok(linhasAfetadas);
+                int linhaAfetadas = await _context.SaveChangesAsync();
+                return Ok(linhaAfetadas);
             }
             catch (System.Exception ex)
             {
-                
                 return BadRequest(ex.Message);
             }
         }
 
+        
+
+        
+
+
+
+
+        
 
 
 
@@ -122,14 +134,5 @@ namespace RpgApi.Controllers
 
 
 
-    }//Fim da classe do tipo controller
-
-
-
-
-
-
-
-
-
+    }
 }

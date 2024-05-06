@@ -1,3 +1,7 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RpgApi.Data;
@@ -6,22 +10,22 @@ using RpgApi.Models;
 namespace RpgApi.Controllers
 {
     [ApiController]
-    [Route("[Controller]")]
+    [Route("[controller]")]
     public class ArmasController : ControllerBase
     {
-        private readonly DataContext _context; //variáveis globais vem com _ antes do nome por padrão
+         private readonly DataContext _context;
 
         public ArmasController(DataContext context)
         {
             _context = context;
         }
 
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetById(int id)
+         [HttpGet("{id}")] //Buscar pelo id
+        public async Task<IActionResult> GetSingle(int id)
         {
             try
             {
-                Arma a = await _context.TB_ARMAS.FirstOrDefaultAsync((a) => a.Id == id);
+                Arma? a = await _context.TB_ARMAS.FirstOrDefaultAsync(aBusca => aBusca.Id == id);
                 return Ok(a);
             }
             catch (System.Exception ex)
@@ -30,13 +34,14 @@ namespace RpgApi.Controllers
             }
         }
 
-        [HttpGet("all")]
-        public async Task<IActionResult> GetAll()
+        [HttpGet("GetAll")]
+        public async Task<IActionResult> Get()
         {
             try
             {
-                List<Arma> la = await _context.TB_ARMAS.ToListAsync();
-                return Ok(la);
+                //using System.Collections.Generic;
+                List<Arma> lista = await _context.TB_ARMAS.ToListAsync();
+                return Ok(lista);
             }
             catch (System.Exception ex)
             {
@@ -45,10 +50,16 @@ namespace RpgApi.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Add(Arma novaArma) 
+        public async Task<IActionResult> Add(Arma novaArma)
         {
             try
-            {
+            {           
+                if(novaArma.Dano == 0) throw new Exception("O dano da arma não pode ser 0.");    
+
+                Personagem? p = await _context.TB_PERSONAGENS.FirstOrDefaultAsync(p => p.Id == novaArma.PersonagemId);
+
+                if(p == null) throw new Exception("Não existe personagem com o Id informado.");
+
                 await _context.TB_ARMAS.AddAsync(novaArma);
                 await _context.SaveChangesAsync();
 
@@ -61,14 +72,14 @@ namespace RpgApi.Controllers
         }
 
         [HttpPut]
-        public async Task<IActionResult> Update(Arma novaArma) 
+        public async Task<IActionResult> Update(Arma novaArma)
         {
             try
             {
                 _context.TB_ARMAS.Update(novaArma);
-                int linhasAfetadas = await _context.SaveChangesAsync();
+                int linhaAfetadas = await _context.SaveChangesAsync();
 
-                return Ok($"{linhasAfetadas} linhas afetadas.");
+                return Ok(linhaAfetadas);
             }
             catch (System.Exception ex)
             {
@@ -81,9 +92,13 @@ namespace RpgApi.Controllers
         {
             try
             {
-                Arma aRemove = await _context.TB_ARMAS.FirstOrDefaultAsync((a) => a.Id == id);
-                _context.TB_ARMAS.Remove(aRemove);
+                Arma? aRemover = await _context.TB_ARMAS.FirstOrDefaultAsync(p => p.Id == id);
+
+                if(aRemover == null) throw new Exception("Arma não encontrada.");
+
+                _context.TB_ARMAS.Remove(aRemover);
                 int linhaAfetadas = await _context.SaveChangesAsync();
+
                 return Ok(linhaAfetadas);
             }
             catch (System.Exception ex)
@@ -91,5 +106,6 @@ namespace RpgApi.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
     }
 }

@@ -1,18 +1,27 @@
 using Microsoft.EntityFrameworkCore;
+// // dotnet add package Microsoft.EntityFrameworkCore.SqlServer
 using RpgApi.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<DataContext>(options =>
 {
-    options.UseSqlServer(builder.Configuration.GetConnectionString("ConexaoLocal"));
+   options.UseSqlServer(builder.Configuration.GetConnectionString("ConexaoLocal"));
 });
+// dotnet ef migrations add InitialCreate
+// dotnet ef database update
+// dotnet ef migrations script -o ./script01_Tabela.sql
 
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddControllers();
+
+// dotnet add package Microsoft.AspNetCore.Mvc.NewtonsoftJson
+builder.Services.AddControllers().AddNewtonsoftJson(options =>
+    options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore    
+);
 
 var app = builder.Build();
 
