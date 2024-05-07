@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RpgApi.Data;
@@ -25,6 +24,8 @@ namespace RpgApi.Controllers
             {
                 Personagem? p = await _context.TB_PERSONAGENS                    
                     .Include(ar => ar.Arma)
+                     // Exercício 4
+                    .Include(p => p.Usuario)
                     .Include(ph => ph.PersonagemHabilidades)
                         .ThenInclude(h => h.Habilidade)
                     .FirstOrDefaultAsync(pBusca => pBusca.Id == id);
@@ -105,29 +106,6 @@ namespace RpgApi.Controllers
                 return Ok(linhaAfetadas);
             }
             catch (System.Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
-
-        // Exercício 4
-        [HttpGet("GetUser/{PersonagemId}")]
-        public async Task<IActionResult> GetSingle(int PersonagemId)
-        {
-            try
-            {
-                Personagem? personagem = await _context.TB_PERSONAGENS
-                    .Include(p => p.Usuario)
-                    .FirstOrDefaultAsync(p => p.Id == PersonagemId);
-
-                if (personagem == null)
-                {
-                    throw new Exception("Personagem não encontrado.");
-                }
-
-                return Ok(personagem.Usuario);
-            }
-            catch (Exception ex)
             {
                 return BadRequest(ex.Message);
             }

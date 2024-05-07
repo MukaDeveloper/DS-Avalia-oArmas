@@ -83,9 +83,7 @@ namespace RpgApi.Controllers
                     .FirstOrDefaultAsync(phBusca => phBusca.PersonagemId == ph.PersonagemId && phBusca.HabilidadeId == ph.HabilidadeId);
 
                 if (toRemove == null)
-                {
                     return BadRequest("Personagem ou Habilidade não encontrados");
-                }
 
                 _context.TB_PERSONAGENS_HABILIDADES.Remove(toRemove);
                 int linhaAfetadas = await _context.SaveChangesAsync();
