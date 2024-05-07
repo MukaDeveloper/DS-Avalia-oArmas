@@ -19,7 +19,6 @@ namespace RpgApi.Models
 
         [NotMapped] // using System.ComponentModel.DataAnnotations.Schema
         public string PasswordString { get; set; } = string.Empty;
-        public string NewPasswordString { get; set; } = string.Empty;
         public List<Personagem> Personagens { get; set; } = new List<Personagem>();//using System.Collections.Generic;
         public string Perfil { get; set; }  = string.Empty;
         public string Email { get; set; } = string.Empty;

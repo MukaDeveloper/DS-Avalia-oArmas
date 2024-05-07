@@ -1,7 +1,4 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RpgApi.Data;
@@ -22,7 +19,7 @@ namespace RpgApi.Controllers
 
 
         [HttpGet("{id}")] //Buscar pelo id
-        public async Task<IActionResult> GetSingle(int id)
+        public async Task<IActionResult> Get(int id)
         {
             try
             {
@@ -113,26 +110,27 @@ namespace RpgApi.Controllers
             }
         }
 
-        
+        // Exercício 4
+        [HttpGet("GetUser/{PersonagemId}")]
+        public async Task<IActionResult> GetSingle(int PersonagemId)
+        {
+            try
+            {
+                Personagem? personagem = await _context.TB_PERSONAGENS
+                    .Include(p => p.Usuario)
+                    .FirstOrDefaultAsync(p => p.Id == PersonagemId);
 
-        
+                if (personagem == null)
+                {
+                    throw new Exception("Personagem não encontrado.");
+                }
 
-
-
-
-        
-
-
-
-
-
-
-
-
-
-
-
-
-
+                return Ok(personagem.Usuario);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
     }
 }

@@ -83,7 +83,7 @@ namespace RpgApi.Controllers
 
         // Exercício 1
         [HttpPut("AlterarSenha")]
-        public async Task<IActionResult> AlterarSenha(Usuario credenciais) {
+        public async Task<IActionResult> AlterarSenha(Usuario credenciais, string novaSenha) {
             try {
                 Usuario? usuario = await _context.TB_USUARIOS.FirstOrDefaultAsync(x => x.Username.ToLower().Equals(credenciais.Username.ToLower()));
 
@@ -94,8 +94,8 @@ namespace RpgApi.Controllers
                     throw new System.Exception("Senha atual incorreta.");
                 }
                 else {
-                    Criptografia.CriarPasswordHash(credenciais.NewPasswordString, out byte[] hash, out byte[] salt);
-                    credenciais.NewPasswordString = string.Empty;
+                    Criptografia.CriarPasswordHash(novaSenha, out byte[] hash, out byte[] salt);
+                    novaSenha = string.Empty;
                     usuario.PasswordHash = hash;
                     usuario.PasswordSalt = salt;
                     await _context.SaveChangesAsync();
