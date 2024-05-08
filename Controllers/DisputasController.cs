@@ -119,5 +119,36 @@ namespace RpgApi.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+        [HttpPost("DisputaEmGrupo")]
+        public async Task<IActionResult> DisputaEmGrupoAsync(Disputa d)
+        {
+            try
+            {
+                d.Resultados = new List<string>();
+
+                List<Personagem> personagens = await _context.TB_PERSONAGENS
+                    .Include(p => p.Arma)
+                    .Include(p => p.PersonagemHabilidades).ThenInclude(ph => ph.Habilidade)
+                    .Where(p => d.ListaIdPersonagens!.Contains(p.Id)).ToListAsync();
+
+                int qtdPersonagensVivos = personagens.FindAll(p => p.PontosVida > 0).Count;
+
+                while (qtdPersonagensVivos > 1)
+                {
+                    //Todas as etapas a seguir devem ficar aqui dentro do While
+                }
+                //Código após o fechamento do While: Atualizará os pontos de vida.
+                //disputas, vitórias e derrotas de todos os personagens ao final das batalhas
+                _context.TB_PERSONAGENS.UpdateRange(personagens);
+                await _context.SaveChangesAsync();
+
+                return Ok(d); 
+            }
+            catch (System.Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
     }
 }
