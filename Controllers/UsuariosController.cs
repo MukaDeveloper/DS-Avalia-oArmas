@@ -89,6 +89,7 @@ namespace RpgApi.Controllers
                 user.PasswordHash = hash;
                 user.PasswordSalt = salt;
                 await _context.TB_USUARIOS.AddAsync(user);
+                await _context.SaveChangesAsync();
 
                 return Ok($"Identificação do usuário criado: {user.Id}. Usuário: {user.Username}. Data de registro: {user.DataAcesso}");
             }
